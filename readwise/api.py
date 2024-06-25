@@ -8,6 +8,8 @@ from requests.models import ChunkedEncodingError
 
 from readwise.models import (
     ReadwiseBook,
+    ReadwiseExportHighlight,
+    ReadwiseExportResults,
     ReadwiseHighlight,
     ReadwiseReaderDocument,
     ReadwiseTag,
@@ -203,16 +205,73 @@ class Readwise:
         Yields:
             dict: Response data
         """
-        page = 1
-        while True:
-            response = getattr(self, get_method)(
-                endpoint, params={"page": page, "page_size": page_size, **params}
-            )
-            data = response.json()
-            yield data
-            if type(data) == list or not data.get("next"):
-                break
-            page += 1
+        if endpoint == "/export/":
+            pageCursor = None
+            while True:
+                if pageCursor:
+                    params.update({"pageCursor": pageCursor})
+                logging.debug(f'Getting page with cursor "{pageCursor}"')
+                try:
+                    response = getattr(self, get_method)(endpoint, params=params)
+                except ChunkedEncodingError:
+                    logging.error(f'Error getting page with cursor "{pageCursor}"')
+                    sleep(5)
+                    continue
+                data = response.json()
+                yield data
+                if (
+                    isinstance(data, list)
+                    or not data.get("nextPageCursor")
+                    or data.get("nextPageCursor") == pageCursor
+                ):
+                    break
+                pageCursor = data.get("nextPageCursor")
+        else:
+            page = 1
+            while True:
+                response = getattr(self, get_method)(
+                    endpoint, params={"page": page, "page_size": page_size, **params}
+                )
+                data = response.json()
+                yield data
+                if isinstance(data, list) or not data.get("next"):
+                    break
+                page += 1
+
+    def export_highlights(
+        self, updated_after: str = None, ids: list[str] = None
+    ) -> Generator[dict, None, None]:
+        params = {}
+        if updated_after:
+            params["updatedAfter"] = updated_after
+        if ids:
+            params["ids"] = ",".join(_id for _id in ids)
+        for data in self.get_pagination_limit_20("/export/", params):
+            for book in data["results"]:
+                book_tags = [ReadwiseTag(**book_tag) for book_tag in book["book_tags"]]
+
+                highlights = [
+                    ReadwiseExportHighlight(
+                        tags=[ReadwiseTag(**tag) for tag in highlight["tags"]],
+                        **{
+                            key: value
+                            for key, value in highlight.items()
+                            if key != "tags"
+                        },
+                    )
+                    for highlight in book["highlights"]
+                ]
+
+                export = ReadwiseExportResults(
+                    **{
+                        key: value
+                        for key, value in book.items()
+                        if key not in ["book_tags", "highlights"]
+                    },
+                    book_tags=book_tags,
+                    highlights=highlights,
+                )
+                yield export
 
     def get_books(
         self, category: Literal["articles", "books", "tweets", "podcasts"]
