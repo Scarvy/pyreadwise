@@ -31,9 +31,7 @@ class ReadwiseBook:
 
 @dataclass
 class ReadwiseHighlight:
-    """
-    Represents a Readwise highlight.
-    """
+    """Represents a Readwise highlight."""
 
     id: str
     text: str
@@ -49,9 +47,7 @@ class ReadwiseHighlight:
 
 @dataclass
 class ReadwiseExportHighlight:
-    """
-    Represents a Readwise highlight.
-    """
+    """Represents a Readwise highlight export."""
 
     id: int
     text: str
@@ -74,6 +70,8 @@ class ReadwiseExportHighlight:
 
 @dataclass
 class ReadwiseExportResults:
+    """Represents a Readwise export result."""
+
     user_book_id: str
     title: str
     author: str
@@ -92,7 +90,40 @@ class ReadwiseExportResults:
 
 
 @dataclass
+class DailyReviewHighlight:
+    """Represents a Readwise Daily Review highlight."""
+
+    text: str
+    title: str
+    author: str
+    url: str
+    source_url: str
+    source_type: str
+    category: str
+    location_type: str
+    location: int
+    note: str
+    highlighted_at: datetime | None
+    highlight_url: str
+    image_url: str
+    id: int
+    api_source: str
+
+
+@dataclass
+class ReadwiseDailyReview:
+    """Represents a Readwise Daily Review."""
+
+    review_id: int
+    review_url: str
+    review_completed: bool
+    highlights: List[dict]
+
+
+@dataclass
 class ReadwiseReaderDocument:
+    """Represents a Readwise Reader Document."""
+
     id: str
     url: str
     source_url: str

@@ -7,7 +7,9 @@ import requests
 from requests.models import ChunkedEncodingError
 
 from readwise.models import (
+    DailyReviewHighlight,
     ReadwiseBook,
+    ReadwiseDailyReview,
     ReadwiseExportHighlight,
     ReadwiseExportResults,
     ReadwiseHighlight,
@@ -238,9 +240,38 @@ class Readwise:
                     break
                 page += 1
 
+    def get_daily_review(self) -> ReadwiseDailyReview:
+        """Get Readwise Daily Review.
+
+        Returns:
+            A ReadwiseDailyReview object
+        """
+        return ReadwiseDailyReview(**self.get("/review/").json())
+
+    def get_daily_review_highlights(
+        self,
+    ) -> Generator[DailyReviewHighlight, None, None]:
+        """Get Readwise Daily Review.
+
+        Returns:
+            A ReadwiseDailyReview object
+        """
+        daily_review = self.get_daily_review()
+        for highlight in daily_review.highlights:
+            yield DailyReviewHighlight(**highlight)
+
     def export_highlights(
         self, updated_after: str = None, ids: list[str] = None
-    ) -> Generator[dict, None, None]:
+    ) -> Generator[ReadwiseExportResults, None, None]:
+        """
+        Export all highlights from Readwise.
+
+        Args:
+            updated_after: date highlight was last updated
+            ids: A list of book ids
+        Yields:
+            A generator of ReadwiseExportResults objects
+        """
         params = {}
         if updated_after:
             params["updatedAfter"] = updated_after
