@@ -422,6 +422,9 @@ class Readwise:
                     note=highlight["note"],
                     location=highlight["location"],
                     location_type=highlight["location_type"],
+                    highlighted_at=datetime.fromisoformat(highlight["highlighted_at"])
+                    if highlight["highlighted_at"]
+                    else None,
                     url=highlight["url"],
                     color=highlight["color"],
                     updated=datetime.fromisoformat(highlight["updated"])
