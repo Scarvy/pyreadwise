@@ -206,7 +206,7 @@ def test_get_export_highlights(mock_get):
             }
         ],
     }
-    export = list(readwise_client.get_export_highlights())
+    export = list(readwise_client.export_highlights())
     assert len(export) == 1
     assert export[0].user_book_id == 1
     assert export[0].title == "Test Book"
@@ -233,15 +233,9 @@ def test_get_export_highlights(mock_get):
     assert export[0].highlights[0].location_type == "page"
     assert export[0].highlights[0].note == "Test Note"
     assert export[0].highlights[0].color == "yellow"
-    assert export[0].highlights[0].highlighted_at == datetime.fromisoformat(
-        "2020-01-01T00:00:00Z"
-    )
-    assert export[0].highlights[0].created_at == datetime.fromisoformat(
-        "2020-01-01T00:00:00Z"
-    )
-    assert export[0].highlights[0].updated_at == datetime.fromisoformat(
-        "2020-01-01T00:00:00Z"
-    )
+    assert export[0].highlights[0].highlighted_at == "2020-01-01T00:00:00Z"
+    assert export[0].highlights[0].created_at == "2020-01-01T00:00:00Z"
+    assert export[0].highlights[0].updated_at == "2020-01-01T00:00:00Z"
     assert export[0].highlights[0].external_id == "test_id"
     assert export[0].highlights[0].end_location is None
     assert export[0].highlights[0].url is None
@@ -254,3 +248,101 @@ def test_get_export_highlights(mock_get):
     assert export[0].highlights[0].is_favorite is False
     assert export[0].highlights[0].is_discard is False
     assert export[0].highlights[0].readwise_url == "https://example.com/readwise"
+
+
+@patch.object(Session, "request")
+def test_get_daily_review(mock_get):
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = {
+        "review_id": 1,
+        "review_url": "https://example.com/review/1",
+        "review_completed": True,
+        "highlights": [
+            {
+                "text": "Test Highlight",
+                "title": "Test Book",
+                "author": "Test Author",
+                "url": None,
+                "source_url": "https://example.com/source",
+                "source_type": "article",
+                "category": "article",
+                "location_type": "page",
+                "location": 1,
+                "note": "Test Note",
+                "highlighted_at": "2020-01-01T00:00:00Z",
+                "highlight_url": "https://example.com/highlight",
+                "image_url": "https://example.com/image.jpg",
+                "id": 1,
+                "api_source": None,
+            }
+        ],
+    }
+
+    daily_review = readwise_client.get_daily_review()
+    assert daily_review.review_id == 1
+    assert daily_review.review_url == "https://example.com/review/1"
+    assert daily_review.review_completed is True
+    assert len(daily_review.highlights) == 1
+    assert daily_review.highlights[0]["text"] == "Test Highlight"
+    assert daily_review.highlights[0]["title"] == "Test Book"
+    assert daily_review.highlights[0]["author"] == "Test Author"
+    assert daily_review.highlights[0]["url"] is None
+    assert daily_review.highlights[0]["source_url"] == "https://example.com/source"
+    assert daily_review.highlights[0]["source_type"] == "article"
+    assert daily_review.highlights[0]["category"] == "article"
+    assert daily_review.highlights[0]["location_type"] == "page"
+    assert daily_review.highlights[0]["location"] == 1
+    assert daily_review.highlights[0]["note"] == "Test Note"
+    assert daily_review.highlights[0]["highlighted_at"] == "2020-01-01T00:00:00Z"
+    assert (
+        daily_review.highlights[0]["highlight_url"] == "https://example.com/highlight"
+    )
+    assert daily_review.highlights[0]["image_url"] == "https://example.com/image.jpg"
+    assert daily_review.highlights[0]["id"] == 1
+    assert daily_review.highlights[0]["api_source"] is None
+
+
+@patch.object(Session, "request")
+def test_get_highlights(mock_get):
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = {
+        "count": 1,
+        "next": None,
+        "previous": None,
+        "results": [
+            {
+                "id": 1,
+                "text": "Test Highlight",
+                "note": "Test Note",
+                "location": 1,
+                "location_type": "page",
+                "highlighted_at": "2020-01-01T00:00:00Z",
+                "url": "https://example.com/highlight",
+                "color": "yellow",
+                "updated": "2020-01-01T00:00:00Z",
+                "book_id": 1,
+                "tags": [
+                    {"id": 1, "name": "test_tag"},
+                    {"id": 2, "name": "test_tag_2"},
+                ],
+            }
+        ],
+    }
+
+    highlights = list(readwise_client.get_highlights())
+    assert len(highlights) == 1
+    assert highlights[0].id == 1
+    assert highlights[0].text == "Test Highlight"
+    assert highlights[0].note == "Test Note"
+    assert highlights[0].location == 1
+    assert highlights[0].location_type == "page"
+    assert highlights[0].highlighted_at == "2020-01-01T00:00:00Z"
+    assert highlights[0].url == "https://example.com/highlight"
+    assert highlights[0].color == "yellow"
+    assert highlights[0].updated == "2020-01-01T00:00:00Z"
+    assert highlights[0].book_id == 1
+    assert len(highlights[0].tags) == 2
+    assert highlights[0].tags[0].id == 1
+    assert highlights[0].tags[0].name == "test_tag"
+    assert highlights[0].tags[1].id == 2
+    assert highlights[0].tags[1].name == "test_tag_2"
