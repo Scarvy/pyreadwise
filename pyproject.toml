@@ -1,0 +1,25 @@
+[project]
+name = "readwise"
+version = "0.1.0"
+description = "Readwise API client"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = [
+    "click>=8.1.7",
+    "click-default-group>=1.2.4",
+    "pydantic>=2.9.0",
+    "requests>=2.32.3",
+]
+
+[project.scripts]
+readwise = "readwise:cli.cli"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.3.2",
+]

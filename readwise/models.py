@@ -1,23 +1,20 @@
-from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field
 
 
-@dataclass
-class ReadwiseTag:
+class ReadwiseTag(BaseModel):
     """Represents a Readwise tag."""
 
-    id: str
+    id: int
     name: str
 
 
-@dataclass
-class ReadwiseBook:
-    """
-    Represents a Readwise book.
-    """
+class ReadwiseBook(BaseModel):
+    """Represents a Readwise book."""
 
-    id: str
+    id: int
     title: str
     author: str
     category: str
@@ -33,69 +30,65 @@ class ReadwiseBook:
     document_note: str
 
 
-@dataclass
-class ReadwiseHighlight:
+class ReadwiseHighlight(BaseModel):
     """Represents a Readwise highlight."""
 
-    id: str
+    id: int
     text: str
     note: str
     location: int
     location_type: str
-    highlighted_at: datetime | None
-    url: str | None
+    highlighted_at: Optional[datetime] = None
+    url: Optional[str] = None
     color: str
-    updated: datetime | None
-    book_id: str
-    tags: list[ReadwiseTag]
+    updated: Optional[datetime] = None
+    book_id: int
+    tags: List[ReadwiseTag]
 
 
-@dataclass
-class ReadwiseExportHighlight:
+class ReadwiseExportHighlight(BaseModel):
     """Represents a Readwise highlight export."""
 
     id: int
     text: str
-    location: int
-    location_type: str
+    location: int | None
+    location_type: str | None
     note: str
     color: str
-    highlighted_at: str
-    created_at: str
-    updated_at: str
-    external_id: str
+    highlighted_at: datetime | None
+    created_at: datetime | None
+    updated_at: datetime | None
+    external_id: str | None
     book_id: int
     readwise_url: str
-    tags: List[ReadwiseTag] = field(default_factory=list)
+    tags: List[ReadwiseTag] = Field(default_factory=list)
     is_favorite: bool = False
     is_discard: bool = False
     url: Optional[str] = None
     end_location: Optional[int] = None
 
 
-@dataclass
-class ReadwiseExportResults:
+class ReadwiseExportResults(BaseModel):
     """Represents a Readwise export result."""
 
-    user_book_id: str
+    user_book_id: int
     title: str
     author: str
     readable_title: str
     source: str
     cover_image_url: str
-    unique_url: str
+    unique_url: str | None
     category: str
-    document_note: str
-    summary: str
+    document_note: str | None
+    summary: str | None
     readwise_url: str
-    source_url: str
-    book_tags: List[ReadwiseTag] = field(default_factory=list)
-    highlights: List[dict] = field(default_factory=list)
+    source_url: str | None
+    book_tags: List[ReadwiseTag] = Field(default_factory=list)
+    highlights: List[ReadwiseExportHighlight] = Field(default_factory=list)
     asin: Optional[str] = None
 
 
-@dataclass
-class DailyReviewHighlight:
+class DailyReviewHighlight(BaseModel):
     """Represents a Readwise Daily Review highlight."""
 
     text: str
@@ -108,25 +101,23 @@ class DailyReviewHighlight:
     location_type: str
     location: int
     note: str
-    highlighted_at: datetime | None
+    highlighted_at: Optional[datetime] = None
     highlight_url: str
     image_url: str
     id: int
     api_source: str
 
 
-@dataclass
-class ReadwiseDailyReview:
+class ReadwiseDailyReview(BaseModel):
     """Represents a Readwise Daily Review."""
 
     review_id: int
     review_url: str
     review_completed: bool
-    highlights: List[dict]
+    highlights: List[Dict[str, Any]]
 
 
-@dataclass
-class ReadwiseReaderDocument:
+class ReadwiseReaderDocument(BaseModel):
     """Represents a Readwise Reader Document."""
 
     id: str
@@ -137,7 +128,7 @@ class ReadwiseReaderDocument:
     source: str
     category: str
     location: str
-    tags: dict[str, Any]
+    tags: Dict[str, Any]
     site_name: str
     word_count: int
     created_at: datetime

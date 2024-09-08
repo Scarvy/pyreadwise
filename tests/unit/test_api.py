@@ -125,6 +125,7 @@ def test_get_book_highlights(mock_get):
                 "note": "Test Note",
                 "location": 1,
                 "location_type": "page",
+                "highlighted_at": "2020-01-01T00:00:00Z",
                 "url": "https://example.com/highlight",
                 "color": "yellow",
                 "updated": "2020-01-01T00:00:00Z",
@@ -143,6 +144,9 @@ def test_get_book_highlights(mock_get):
     assert highlights[0].note == "Test Note"
     assert highlights[0].location == 1
     assert highlights[0].location_type == "page"
+    assert highlights[0].highlighted_at == datetime.fromisoformat(
+        "2020-01-01T00:00:00Z"
+    )
     assert highlights[0].url == "https://example.com/highlight"
     assert highlights[0].color == "yellow"
     assert highlights[0].updated == datetime.fromisoformat("2020-01-01T00:00:00Z")
@@ -187,9 +191,11 @@ def test_get_export_highlights(mock_get):
                         "location_type": "page",
                         "note": "Test Note",
                         "color": "yellow",
-                        "highlighted_at": "2020-01-01T00:00:00Z",
-                        "created_at": "2020-01-01T00:00:00Z",
-                        "updated_at": "2020-01-01T00:00:00Z",
+                        "highlighted_at": datetime.fromisoformat(
+                            "2020-01-01T00:00:00Z"
+                        ),
+                        "created_at": datetime.fromisoformat("2020-01-01T00:00:00Z"),
+                        "updated_at": datetime.fromisoformat("2020-01-01T00:00:00Z"),
                         "external_id": "test_id",
                         "end_location": None,
                         "url": None,
@@ -233,9 +239,15 @@ def test_get_export_highlights(mock_get):
     assert export[0].highlights[0].location_type == "page"
     assert export[0].highlights[0].note == "Test Note"
     assert export[0].highlights[0].color == "yellow"
-    assert export[0].highlights[0].highlighted_at == "2020-01-01T00:00:00Z"
-    assert export[0].highlights[0].created_at == "2020-01-01T00:00:00Z"
-    assert export[0].highlights[0].updated_at == "2020-01-01T00:00:00Z"
+    assert export[0].highlights[0].highlighted_at == datetime.fromisoformat(
+        "2020-01-01T00:00:00Z"
+    )
+    assert export[0].highlights[0].created_at == datetime.fromisoformat(
+        "2020-01-01T00:00:00Z"
+    )
+    assert export[0].highlights[0].updated_at == datetime.fromisoformat(
+        "2020-01-01T00:00:00Z"
+    )
     assert export[0].highlights[0].external_id == "test_id"
     assert export[0].highlights[0].end_location is None
     assert export[0].highlights[0].url is None
@@ -336,10 +348,12 @@ def test_get_highlights(mock_get):
     assert highlights[0].note == "Test Note"
     assert highlights[0].location == 1
     assert highlights[0].location_type == "page"
-    assert highlights[0].highlighted_at == "2020-01-01T00:00:00Z"
+    assert highlights[0].highlighted_at == datetime.fromisoformat(
+        "2020-01-01T00:00:00Z"
+    )
     assert highlights[0].url == "https://example.com/highlight"
     assert highlights[0].color == "yellow"
-    assert highlights[0].updated == "2020-01-01T00:00:00Z"
+    assert highlights[0].updated == datetime.fromisoformat("2020-01-01T00:00:00Z")
     assert highlights[0].book_id == 1
     assert len(highlights[0].tags) == 2
     assert highlights[0].tags[0].id == 1
