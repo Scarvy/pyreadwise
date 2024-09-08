@@ -23,9 +23,13 @@ class ReadwiseBook:
     category: str
     source: str
     num_highlights: int
+    last_highlight_at: datetime
+    updated: datetime
     cover_image_url: str
     highlights_url: str
     source_url: str
+    asin: str
+    tags: List[ReadwiseTag]
     document_note: str
 
 
@@ -85,7 +89,7 @@ class ReadwiseExportResults:
     readwise_url: str
     source_url: str
     book_tags: List[ReadwiseTag] = field(default_factory=list)
-    highlights: List[ReadwiseExportHighlight] = field(default_factory=list)
+    highlights: List[dict] = field(default_factory=list)
     asin: Optional[str] = None
 
 
