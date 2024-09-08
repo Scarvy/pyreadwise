@@ -1,16 +1,11 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 
 @dataclass
 class ReadwiseTag:
-    """Represents a Readwise tag.
-
-    Attributes:
-        id: The tag's ID.
-        name: The tag's name.
-    """
+    """Represents a Readwise tag."""
 
     id: str
     name: str
@@ -20,22 +15,6 @@ class ReadwiseTag:
 class ReadwiseBook:
     """
     Represents a Readwise book.
-
-    Attributes:
-        id: The book's ID.
-        title: The book's title.
-        author: The book's author.
-        category: The book's category.
-        source: The book's source.
-        num_highlights: The number of highlights for the book.
-        last_highlight_at: The date and time of the last highlight for the book.
-        updated: The date and time the book was last updated.
-        cover_image_url: The URL of the book's cover image.
-        highlights_url: The URL of the book's highlights.
-        source_url: The URL of the book's source.
-        asin: The book's ASIN.
-        tags: The book's tags.
-        document_note: The book's document note.
     """
 
     id: str
@@ -44,39 +23,26 @@ class ReadwiseBook:
     category: str
     source: str
     num_highlights: int
-    last_highlight_at: datetime | None
-    updated: datetime | None
+    last_highlight_at: datetime
+    updated: datetime
     cover_image_url: str
     highlights_url: str
     source_url: str
     asin: str
-    tags: list[ReadwiseTag]
+    tags: List[ReadwiseTag]
     document_note: str
 
 
 @dataclass
 class ReadwiseHighlight:
-    """
-    Represents a Readwise highlight.
-
-    Attributes:
-        id: The highlight's ID.
-        text: The highlight's text.
-        note: The highlight's note.
-        location: The highlight's location.
-        location_type: The highlight's location type.
-        url: The highlight's URL.
-        color: The highlight's color.
-        updated: The date and time the highlight was last updated.
-        book_id: The ID of the book the highlight is from.
-        tags: The highlight's tags.
-    """
+    """Represents a Readwise highlight."""
 
     id: str
     text: str
     note: str
     location: int
     location_type: str
+    highlighted_at: datetime | None
     url: str | None
     color: str
     updated: datetime | None
@@ -85,7 +51,84 @@ class ReadwiseHighlight:
 
 
 @dataclass
+class ReadwiseExportHighlight:
+    """Represents a Readwise highlight export."""
+
+    id: int
+    text: str
+    location: int
+    location_type: str
+    note: str
+    color: str
+    highlighted_at: str
+    created_at: str
+    updated_at: str
+    external_id: str
+    book_id: int
+    readwise_url: str
+    tags: List[ReadwiseTag] = field(default_factory=list)
+    is_favorite: bool = False
+    is_discard: bool = False
+    url: Optional[str] = None
+    end_location: Optional[int] = None
+
+
+@dataclass
+class ReadwiseExportResults:
+    """Represents a Readwise export result."""
+
+    user_book_id: str
+    title: str
+    author: str
+    readable_title: str
+    source: str
+    cover_image_url: str
+    unique_url: str
+    category: str
+    document_note: str
+    summary: str
+    readwise_url: str
+    source_url: str
+    book_tags: List[ReadwiseTag] = field(default_factory=list)
+    highlights: List[dict] = field(default_factory=list)
+    asin: Optional[str] = None
+
+
+@dataclass
+class DailyReviewHighlight:
+    """Represents a Readwise Daily Review highlight."""
+
+    text: str
+    title: str
+    author: str
+    url: str
+    source_url: str
+    source_type: str
+    category: str
+    location_type: str
+    location: int
+    note: str
+    highlighted_at: datetime | None
+    highlight_url: str
+    image_url: str
+    id: int
+    api_source: str
+
+
+@dataclass
+class ReadwiseDailyReview:
+    """Represents a Readwise Daily Review."""
+
+    review_id: int
+    review_url: str
+    review_completed: bool
+    highlights: List[dict]
+
+
+@dataclass
 class ReadwiseReaderDocument:
+    """Represents a Readwise Reader Document."""
+
     id: str
     url: str
     source_url: str
@@ -103,5 +146,5 @@ class ReadwiseReaderDocument:
     published_date: str
     summary: str
     image_url: str
-    parent_id: Optional[str]
     reading_progress: float
+    parent_id: Optional[str] = None
