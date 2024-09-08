@@ -627,7 +627,7 @@ class ReadwiseReader:
             data = response.json()
             yield data
             if (
-                type(data) == list
+                isinstance(data, list)
                 or not data.get("nextPageCursor")
                 or data.get("nextPageCursor") == pageCursor
             ):
