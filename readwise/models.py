@@ -42,6 +42,7 @@ class ReadwiseHighlight:
     note: str
     location: int
     location_type: str
+    highlighted_at: datetime | None
     url: str | None
     color: str
     updated: datetime | None
